@@ -321,7 +321,7 @@
 
 <body>
   <video autoplay muted loop id="bgVideo">
-    <source src="/static/video/websiteBackgroundVideo1.mp4" type="video/mp4">
+    <source src="/video/websiteBackgroundVideo1.mp4" type="video/mp4">
   </video>
 
   <div class="lang-switch">
@@ -374,7 +374,7 @@
   </div>
 
   <!-- 配置文件 -->
-  <script src="/static/config.js"></script>
+  <script src="/config.js"></script>
 
   <script>
     // 检测环境并设置 API 配置
@@ -468,7 +468,7 @@
     // 加载帮助内容
     async function loadHelpContent() {
       try {
-        const response = await fetch('/static/help_content.json');
+        const response = await fetch('/help_content.json');
         helpContent = await response.json();
       } catch (error) {
         console.error('Failed to load help content:', error);
@@ -492,11 +492,11 @@
     function showAuthorCard() {
       const cardImage = document.getElementById('authorCardImage');
       // 根据语言选择不同的图片
-      const imagePath = `/static/images/author_card_${currentLang}.jpg`;
+      const imagePath = `/images/author_card_${currentLang}.jpg`;
       cardImage.src = imagePath;
       cardImage.onerror = function() {
         // 如果图片不存在，使用默认图片
-        this.src = '/static/images/author_card_default.jpg';
+        this.src = '/images/author_card_default.jpg';
       };
       document.getElementById('cardOverlay').classList.add('active');
     }
@@ -510,7 +510,7 @@
     // 加载滚动文本
     async function loadScrollingTexts() {
       try {
-        const response = await fetch('/static/scrolling_texts.json');
+        const response = await fetch('/scrolling_texts.json');
         scrollingTexts = await response.json();
         startScrollingText();
       } catch (error) {
