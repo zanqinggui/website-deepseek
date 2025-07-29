@@ -1,0 +1,59 @@
+# 环境变量 - 绝对不要上传！
+.env
+.env.*
+.env.local
+.env.production
+
+# 密钥文件夹 - 包含所有 prompt 文档
+key/
+keys/
+*.key
+*.docx
+
+# API 密钥配置
+config.py
+config.json
+secrets.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+logs/
+
+# 测试文件
+test_*.py
+*_test.py
+
+# 备份文件
+*.bak
+*.backup
+*_backup.*
+*.old
+
+# 临时文件
+*.tmp
+*.temp
+temp/
+tmp/

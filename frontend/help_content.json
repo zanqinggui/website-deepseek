@@ -1,0 +1,14 @@
+{
+  "zh": {
+    "title": "使用帮助",
+    "content": "欢迎使用跨境购物助手！\n\n使用步骤：\n1. 在搜索框中输入您想购买的商品类型（如：手机、冰箱、化妆品等）\n2. 点击搜索按钮或按回车键开始搜索\n3. 系统会为您推荐该类别的中国优质品牌\n4. 点击左侧品牌按钮查看品牌详情\n5. 选择感兴趣的产品系列查看详细信息\n6. 点击底部的电商平台链接直接购买\n\n提示：\n• 支持中文、英文、俄文三种语言\n• 所有推荐均为中国品牌，性价比高\n• 价格比欧美品牌便宜30-50%\n• 支持俄罗斯直邮，售后有保障"
+  },
+  "en": {
+    "title": "Help Guide",
+    "content": "Welcome to Cross-border Shopping Assistant!\n\nHow to use:\n1. Enter the product type you want to buy (e.g., smartphone, refrigerator, cosmetics)\n2. Click search button or press Enter to start\n3. System will recommend quality Chinese brands\n4. Click brand buttons on the left for details\n5. Select product series for more information\n6. Click e-commerce links at bottom to purchase\n\nTips:\n• Supports Chinese, English, and Russian\n• All recommendations are Chinese brands\n• 30-50% cheaper than European/US brands\n• Direct shipping to Russia available"
+  },
+  "ru": {
+    "title": "Руководство",
+    "content": "Добро пожаловать в помощник трансграничных покупок!\n\nКак использовать:\n1. Введите тип товара (например: смартфон, холодильник, косметика)\n2. Нажмите кнопку поиска или Enter\n3. Система порекомендует качественные китайские бренды\n4. Нажмите на бренд слева для подробностей\n5. Выберите серию продуктов для информации\n6. Нажмите на ссылки магазинов внизу для покупки\n\nСоветы:\n• Поддержка 3 языков\n• Все рекомендации - китайские бренды\n• На 30-50% дешевле европейских/американских\n• Прямая доставка в Россию"
+  }
+}
