@@ -16,7 +16,7 @@
       "dest": "/frontend/$1"
     }
   ],
-  "regions": ["arn1", "hel1"],
+  "regions": ["fra1", "arn1"],
   "headers": [
     {
       "source": "/(.*)",
