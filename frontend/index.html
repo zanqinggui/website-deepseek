@@ -377,11 +377,17 @@
   <script src="/config.js"></script>
 
   <script>
-    // 检测环境并设置 API 配置
-    const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-    const API_BASE_URL = isProduction
-      ? 'https://api.guishkakrasiviy.com'
-      : (typeof CONFIG !== 'undefined' ? CONFIG.API_BASE_URL : 'http://127.0.0.1:8000');
+    // 支持通过 URL 参数动态指定 API 地址
+    const urlParams = new URLSearchParams(window.location.search);
+    const API_BASE_URL = urlParams.get('api') ||
+                        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                          ? 'http://127.0.0.1:8000'
+                          : 'https://api.guishkakrasiviy.com');
+
+    // 如果使用了自定义 API，在控制台显示
+    if (urlParams.get('api')) {
+      console.log('Using custom API:', API_BASE_URL);
+    }
 
     // API认证密钥 - 从配置文件或环境变量读取
     const API_KEY = typeof CONFIG !== 'undefined'
