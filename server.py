@@ -50,9 +50,6 @@ limiter = Limiter(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# 让 FastAPI 提供 frontend 文件夹里的静态资源（index.html、video、css、js等）
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
-
 # 配置CORS - 只允许特定域名
 app.add_middleware(
     CORSMiddleware,
@@ -63,9 +60,18 @@ app.add_middleware(
 )
 
 # 添加受信任主机中间件
+# 添加受信任主机中间件
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["127.0.0.1", "localhost", "*.yourdomain.com"]  # 添加您的域名
+    allowed_hosts=[
+        "127.0.0.1",
+        "localhost",
+        "*.ngrok-free.app",
+        "*.ngrok.io",
+        "guishkakrasiviy.com",
+        "www.guishkakrasiviy.com",
+        "api.guishkakrasiviy.com"  # 为将来的API子域名预留
+    ]
 )
 
 # 认证依赖
@@ -217,12 +223,6 @@ async def brand_detail_with_context(request: Request, data: BrandWithContextRequ
     return {"output": result}
 
 
-# 🏠 首页 - 不需要认证
-@app.get("/", response_class=FileResponse)
-async def serve_index():
-    return FileResponse("frontend/index.html")
-
-
 # 📱 产品系列详情接口 - 流式输出
 @app.post("/product-detail-stream")
 @limiter.limit("20/minute")
@@ -303,3 +303,9 @@ async def generate_keyword(request: Request, data: KeywordRequest, token: str = 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "Cross-Border Shopping Assistant"}
+
+
+# 静态文件服务 - 必须放在所有路由之后
+app.mount("/video", StaticFiles(directory="frontend/video"), name="video")
+app.mount("/images", StaticFiles(directory="frontend/images"), name="images")
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

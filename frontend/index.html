@@ -377,12 +377,15 @@
   <script src="/config.js"></script>
 
   <script>
+    // 直接定义 CONFIG，不依赖外部文件
+    const CONFIG = {
+      API_KEY: "gsk-2025-secure-key-change-this",
+      API_BASE_URL: "https://api.guishkakrasiviy.com"
+    };
+
     // 支持通过 URL 参数动态指定 API 地址
     const urlParams = new URLSearchParams(window.location.search);
-    const API_BASE_URL = urlParams.get('api') ||
-                        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                          ? 'http://127.0.0.1:8000'
-                          : 'https://api.guishkakrasiviy.com');
+    const API_BASE_URL = urlParams.get('api') || CONFIG.API_BASE_URL;
 
     // 如果使用了自定义 API，在控制台显示
     if (urlParams.get('api')) {
@@ -682,8 +685,8 @@
           document.getElementById("keywordStatus").innerText = translations[currentLang].brandSearching;
           try {
             const apiUrl = currentSearchQuery
-              ? "http://127.0.0.1:8000/brand-detail-with-context-stream"
-              : "http://127.0.0.1:8000/brand-detail-stream";
+              ? `${API_BASE_URL}/brand-detail-with-context-stream`
+              : `${API_BASE_URL}/brand-detail-stream`;
 
             const requestBody = currentSearchQuery
               ? { brand: brand, context: currentSearchQuery, language: currentLang }
@@ -820,8 +823,8 @@
             document.getElementById("keywordStatus").innerText = translations[currentLang].seriesLoading;
             try {
               const apiUrl = currentSearchQuery
-                ? "http://127.0.0.1:8000/product-detail-with-context-stream"
-                : "http://127.0.0.1:8000/product-detail-stream";
+                ? `${API_BASE_URL}/product-detail-with-context-stream`
+                : `${API_BASE_URL}/product-detail-stream`;
 
               const requestBody = currentSearchQuery
                 ? { brand: `${brand} ${seriesName}`, context: currentSearchQuery, language: currentLang }
@@ -890,7 +893,7 @@
     // 生成购买链接
     async function generatePurchaseLinks(brand, seriesName) {
       try {
-        const keywordRes = await fetch("http://127.0.0.1:8000/generate-keyword", {
+        const keywordRes = await fetch(`${API_BASE_URL}/generate-keyword`, {
           method: "POST",
           headers: getAuthHeaders(),
           body: JSON.stringify({
