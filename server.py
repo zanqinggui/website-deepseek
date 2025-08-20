@@ -33,7 +33,7 @@ app = FastAPI()
 
 # 获取认证密钥和允许的域名
 API_AUTH_KEY = os.getenv("API_AUTH_KEY", "default-key-change-this")
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:8000,http://localhost:8000").split(",")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8080,http://localhost:8080").split(",")
 
 
 # 创建限流器 - 修复编码问题

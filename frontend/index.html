@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Cross-Border Shopping Assistant</title>
   <link rel="icon" href="data:,">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     #bgVideo {
       position: fixed;
@@ -91,10 +92,64 @@
       padding: 16px;
       border-radius: 8px;
       overflow-y: auto;
-      white-space: pre-wrap;
       font-size: 15px;
       line-height: 1.5;
       order: 2;
+      text-align: left;
+      position: relative;
+    }
+
+    /* 初始文本居中 */
+    #searchResults.initial-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Markdown样式 */
+    #searchResults table {
+      border-collapse: collapse;
+      margin: 15px 0;
+      background: rgba(255, 255, 255, 0.05);
+      width: 100%;
+    }
+
+    #searchResults th, #searchResults td {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      text-align: left;
+    }
+
+    #searchResults th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: bold;
+      color: inherit;
+    }
+
+    #searchResults strong {
+      color: inherit;
+      text-shadow: none;
+    }
+
+    #searchResults h1, #searchResults h2, #searchResults h3 {
+      color: inherit;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    #searchResults ul, #searchResults ol {
+      margin-left: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    #searchResults li {
+      margin-bottom: 5px;
+    }
+
+    #searchResults p {
+      margin: 10px 0;
     }
 
     #keywordBox {
@@ -197,8 +252,8 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      width: 80%;  /* 改为占屏幕宽度的80% */
-      max-width: 900px;  /* 最大宽度限制 */
+      width: 80%;
+      max-width: 900px;
       background-color: rgba(0, 0, 0, 0.7);
       border-radius: 6px;
       padding: 12px 20px;
@@ -207,7 +262,7 @@
 
     .scrolling-text {
       color: white;
-      font-size: 16px;  /* 从18px减小到16px */
+      font-size: 16px;
       text-align: center;
       white-space: nowrap;
       opacity: 0;
@@ -342,7 +397,7 @@
       <div id="keywordStatus">这里会显示一些关键词</div>
     </div>
     <div class="spacer"></div>
-    <div id="searchResults">这里将显示搜索结果</div>
+    <div id="searchResults" class="initial-state">这里将显示搜索结果</div>
   </div>
 
   <!-- 滚动文字栏 -->
@@ -373,9 +428,6 @@
     </div>
   </div>
 
-  <!-- 配置文件 -->
-  <!-- <script src="/config.js"></script> -->
-
   <script>
     // 直接定义 CONFIG，不依赖外部文件
     const CONFIG = {
@@ -392,7 +444,7 @@
       console.log('Using custom API:', API_BASE_URL);
     }
 
-    // API认证密钥 - 从配置文件或环境变量读取
+    // API认证密钥
     const API_KEY = typeof CONFIG !== 'undefined'
       ? CONFIG.API_KEY
       : "gsk-2025-secure-key-change-this";
@@ -469,10 +521,10 @@
     };
 
     let currentLang = "zh";
-    let currentSearchQuery = ""; // 保存当前搜索的商品类型
-    let scrollingTexts = {}; // 存储滚动文本
-    let currentTextIndex = 0; // 当前显示的文本索引
-    let helpContent = {}; // 存储帮助内容
+    let currentSearchQuery = "";
+    let scrollingTexts = {};
+    let currentTextIndex = 0;
+    let helpContent = {};
 
     // 加载帮助内容
     async function loadHelpContent() {
@@ -500,11 +552,9 @@
     // 显示作者名片
     function showAuthorCard() {
       const cardImage = document.getElementById('authorCardImage');
-      // 根据语言选择不同的图片
       const imagePath = `/images/author_card_${currentLang}.jpg`;
       cardImage.src = imagePath;
       cardImage.onerror = function() {
-        // 如果图片不存在，使用默认图片
         this.src = '/images/author_card_default.jpg';
       };
       document.getElementById('cardOverlay').classList.add('active');
@@ -524,7 +574,6 @@
         startScrollingText();
       } catch (error) {
         console.error('Failed to load scrolling texts:', error);
-        // 使用默认文本
         scrollingTexts = {
           zh: ["欢迎使用跨境购物助手"],
           en: ["Welcome to Cross-border Shopping Assistant"],
@@ -537,7 +586,7 @@
     // 开始滚动文本
     function startScrollingText() {
       updateScrollingText();
-      setInterval(updateScrollingText, 5000); // 每5秒切换
+      setInterval(updateScrollingText, 5000);
     }
 
     // 更新滚动文本
@@ -545,21 +594,16 @@
       const texts = scrollingTexts[currentLang] || scrollingTexts['zh'];
       const scrollingElement = document.getElementById('scrollingText');
 
-      // 淡出效果
       scrollingElement.classList.remove('active');
 
       setTimeout(() => {
-        // 随机选择一个不同的文本
         let newIndex;
         do {
           newIndex = Math.floor(Math.random() * texts.length);
         } while (newIndex === currentTextIndex && texts.length > 1);
 
         currentTextIndex = newIndex;
-
-        // 更新文本
         scrollingElement.textContent = texts[currentTextIndex];
-        // 淡入效果
         scrollingElement.classList.add('active');
       }, 500);
     }
@@ -568,16 +612,13 @@
       currentLang = lang;
       const t = translations[lang];
 
-      // 更新所有UI文本
       document.getElementById("pageTitle").innerText = t.title;
       document.getElementById("searchInput").placeholder = t.placeholder;
       document.getElementById("searchButton").innerText = t.button;
 
-      // 更新关键词框和结果框的默认文本
       const keywordStatus = document.getElementById("keywordStatus");
       const searchResults = document.getElementById("searchResults");
 
-      // 只有在显示默认文本时才更新
       if (keywordStatus.innerText === translations.zh.keywordPlaceholder ||
           keywordStatus.innerText === translations.en.keywordPlaceholder ||
           keywordStatus.innerText === translations.ru.keywordPlaceholder) {
@@ -590,10 +631,8 @@
         searchResults.innerText = t.resultPlaceholder;
       }
 
-      // 立即更新滚动文本（保持随机性）
       updateScrollingText();
 
-      // 更新左下角按钮文本
       document.getElementById('helpButton').textContent = t.helpButton;
       document.getElementById('authorButton').textContent = t.authorButton;
     }
@@ -609,7 +648,9 @@
         return;
       }
 
-      results.innerText = "";
+      // 移除初始状态类
+      results.classList.remove('initial-state');
+      results.innerHTML = "";
       keywordBox.innerHTML = `<div id="keywordStatus">${translations[currentLang].searching}</div>`;
 
       currentSearchQuery = input;
@@ -644,8 +685,9 @@
               try {
                 const data = JSON.parse(line.slice(6));
                 if (data.content) {
-                  results.innerText += data.content;
                   fullContent += data.content;
+                  // 使用marked解析并显示
+                  results.innerHTML = marked.parse(fullContent);
                 }
                 if (data.done) {
                   parseAndDisplayBrands(fullContent, keywordBox);
@@ -701,10 +743,9 @@
             if (!res.ok) throw new Error("服务器错误！");
 
             // 创建品牌内容容器
-            const brandContent = document.createElement('div');
-            brandContent.style.whiteSpace = 'pre-wrap';
-            brandContent.textContent = `\n\n📌 ${brand} ${translations[currentLang].brandDetailPrefix}\n`;
-            document.getElementById("searchResults").appendChild(brandContent);
+            const brandContainer = document.createElement('div');
+            brandContainer.style.marginTop = '20px';
+            document.getElementById("searchResults").appendChild(brandContainer); // 先添加到DOM
 
             // 流式读取响应
             const reader = res.body.getReader();
@@ -725,11 +766,12 @@
                   try {
                     const data = JSON.parse(line.slice(6));
                     if (data.content) {
-                      brandContent.textContent += data.content;
                       fullContent += data.content;
+                      // 使用marked解析并显示 - 实时更新
+                      brandContainer.innerHTML = marked.parse(`## 📌 ${brand} ${translations[currentLang].brandDetailPrefix}\n\n${fullContent}`);
                     }
                     if (data.done) {
-                      // 流式输出完成，解析产品系列
+                      // 流式输出完成，解析产品系列（使用原始文本）
                       parseBrandSeries(fullContent, brand);
                     }
                   } catch (e) {
@@ -761,12 +803,10 @@
           let seriesName = trimmedLine.replace("◆◆◆ ", "").trim();
           seriesName = seriesName.replace(/\*+([^*]+)\*+/g, '$1');
 
-          // 处理包含括号描述的情况，如 "Find Series" (Flagship lineup...)
           const nameWithDescMatch = seriesName.match(/^"?([^"(]+)"?\s*\(/);
           if (nameWithDescMatch) {
             seriesName = nameWithDescMatch[1].trim();
           } else {
-            // 原有的处理逻辑
             const englishMatch = seriesName.match(/[（(]([A-Za-z\s\-]+)[）)]/);
             if (currentLang !== "zh" && englishMatch) {
               seriesName = englishMatch[1].trim();
@@ -783,12 +823,10 @@
           let seriesName = trimmedLine.replace("🔸 ", "").trim();
           seriesName = seriesName.replace(/\*+([^*]+)\*+/g, '$1');
 
-          // 处理包含括号描述的情况
           const nameWithDescMatch = seriesName.match(/^"?([^"(]+)"?\s*\(/);
           if (nameWithDescMatch) {
             seriesName = nameWithDescMatch[1].trim();
           } else {
-            // 原有的处理逻辑
             const englishMatch = seriesName.match(/[（(]([A-Za-z\s\-]+)[）)]/);
             if (currentLang !== "zh" && englishMatch) {
               seriesName = englishMatch[1].trim();
@@ -839,10 +877,12 @@
               if (!seriesRes.ok) throw new Error("服务器错误！");
 
               // 创建产品系列内容容器
-              const newContent = document.createElement('div');
-              newContent.style.whiteSpace = 'pre-wrap';
-              newContent.textContent = `\n\n🔹 ${seriesName} ${translations[currentLang].seriesDetailPrefix}\n`;
-              document.getElementById("searchResults").appendChild(newContent);
+              const seriesContainer = document.createElement('div');
+              seriesContainer.style.marginTop = '20px';
+              document.getElementById("searchResults").appendChild(seriesContainer); // 先添加到DOM
+
+              // 立即开始生成购买链接（不等待内容加载完成）
+              generatePurchaseLinks(brand, seriesName);
 
               // 流式读取响应
               const reader = seriesRes.body.getReader();
@@ -863,12 +903,9 @@
                     try {
                       const data = JSON.parse(line.slice(6));
                       if (data.content) {
-                        newContent.textContent += data.content;
                         seriesFullContent += data.content;
-                      }
-                      if (data.done) {
-                        // 流式输出完成，生成购买链接
-                        generatePurchaseLinks(brand, seriesName);
+                        // 使用marked解析并显示 - 实时更新
+                        seriesContainer.innerHTML = marked.parse(`## 🔹 ${seriesName} ${translations[currentLang].seriesDetailPrefix}\n\n${seriesFullContent}`);
                       }
                     } catch (e) {
                       console.error('Parse error:', e);
@@ -893,22 +930,8 @@
     // 生成购买链接
     async function generatePurchaseLinks(brand, seriesName) {
       try {
-        const keywordRes = await fetch(`${API_BASE_URL}/generate-keyword`, {
-          method: "POST",
-          headers: getAuthHeaders(),
-          body: JSON.stringify({
-            brand: brand,
-            series: seriesName,
-            category: currentSearchQuery,
-            language: currentLang
-          })
-        });
-
+        // 先使用默认关键词生成链接
         let searchKeyword = `${brand} ${seriesName}`;
-        if (keywordRes.ok) {
-          const keywordData = await keywordRes.json();
-          searchKeyword = keywordData.keyword;
-        }
 
         const purchaseLinksHtml = `
           <div class="purchase-links-section">
@@ -937,6 +960,33 @@
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = purchaseLinksHtml;
         document.getElementById("searchResults").appendChild(tempDiv.firstElementChild);
+
+        // 异步获取优化的关键词并更新链接
+        const keywordRes = await fetch(`${API_BASE_URL}/generate-keyword`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            brand: brand,
+            series: seriesName,
+            category: currentSearchQuery,
+            language: currentLang
+          })
+        });
+
+        if (keywordRes.ok) {
+          const keywordData = await keywordRes.json();
+          searchKeyword = keywordData.keyword;
+
+          // 更新所有购买链接
+          const purchaseSection = document.querySelector('.purchase-links-section:last-child');
+          if (purchaseSection) {
+            const links = purchaseSection.querySelectorAll('.purchase-link-button');
+            links[0].href = `https://www.ozon.ru/search/?text=${encodeURIComponent(searchKeyword)}`;
+            links[1].href = `https://www.wildberries.ru/catalog/0/search.aspx?search=${encodeURIComponent(searchKeyword)}`;
+            links[2].href = `https://market.yandex.ru/search?text=${encodeURIComponent(searchKeyword)}`;
+            links[3].href = `https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(searchKeyword)}`;
+          }
+        }
       } catch (err) {
         console.error('Error generating purchase links:', err);
       }
@@ -954,10 +1004,7 @@
       document.getElementById("keywordStatus").innerText = translations[currentLang].keywordPlaceholder;
       document.getElementById("searchResults").innerText = translations[currentLang].resultPlaceholder;
 
-      // 加载滚动文本
       loadScrollingTexts();
-
-      // 加载帮助内容
       loadHelpContent();
     });
   </script>
