@@ -930,9 +930,32 @@
     // 生成购买链接
     async function generatePurchaseLinks(brand, seriesName) {
       try {
-        // 先使用默认关键词生成链接
         let searchKeyword = `${brand} ${seriesName}`;
-
+        
+        // 对于中文，先获取英文关键词
+        if (currentLang === 'zh') {
+          try {
+            const keywordRes = await fetch(`${API_BASE_URL}/generate-keyword`, {
+              method: "POST",
+              headers: getAuthHeaders(),
+              body: JSON.stringify({
+                brand: brand,
+                series: seriesName,
+                category: currentSearchQuery,
+                language: currentLang
+              })
+            });
+            
+            if (keywordRes.ok) {
+              const keywordData = await keywordRes.json();
+              searchKeyword = keywordData.keyword;
+            }
+          } catch (err) {
+            console.error('Keyword generation failed:', err);
+          }
+        }
+        
+        // 生成购买链接
         const purchaseLinksHtml = `
           <div class="purchase-links-section">
             <div class="purchase-links-title">${translations[currentLang].purchaseTitle}</div>
@@ -961,31 +984,38 @@
         tempDiv.innerHTML = purchaseLinksHtml;
         document.getElementById("searchResults").appendChild(tempDiv.firstElementChild);
 
-        // 异步获取优化的关键词并更新链接
-        const keywordRes = await fetch(`${API_BASE_URL}/generate-keyword`, {
-          method: "POST",
-          headers: getAuthHeaders(),
-          body: JSON.stringify({
-            brand: brand,
-            series: seriesName,
-            category: currentSearchQuery,
-            language: currentLang
-          })
-        });
-
-        if (keywordRes.ok) {
-          const keywordData = await keywordRes.json();
-          searchKeyword = keywordData.keyword;
-
-          // 更新所有购买链接
-          const purchaseSection = document.querySelector('.purchase-links-section:last-child');
-          if (purchaseSection) {
-            const links = purchaseSection.querySelectorAll('.purchase-link-button');
-            links[0].href = `https://www.ozon.ru/search/?text=${encodeURIComponent(searchKeyword)}`;
-            links[1].href = `https://www.wildberries.ru/catalog/0/search.aspx?search=${encodeURIComponent(searchKeyword)}`;
-            links[2].href = `https://market.yandex.ru/search?text=${encodeURIComponent(searchKeyword)}`;
-            links[3].href = `https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(searchKeyword)}`;
-          }
+        // 对于非中文语言，异步更新关键词（如果需要优化）
+        if (currentLang !== 'zh') {
+          fetch(`${API_BASE_URL}/generate-keyword`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              brand: brand,
+              series: seriesName,
+              category: currentSearchQuery,
+              language: currentLang
+            })
+          }).then(keywordRes => {
+            if (keywordRes.ok) {
+              return keywordRes.json();
+            }
+          }).then(keywordData => {
+            if (keywordData && keywordData.keyword) {
+              searchKeyword = keywordData.keyword;
+              
+              // 更新所有购买链接
+              const purchaseSection = document.querySelector('.purchase-links-section:last-child');
+              if (purchaseSection) {
+                const links = purchaseSection.querySelectorAll('.purchase-link-button');
+                links[0].href = `https://www.ozon.ru/search/?text=${encodeURIComponent(searchKeyword)}`;
+                links[1].href = `https://www.wildberries.ru/catalog/0/search.aspx?search=${encodeURIComponent(searchKeyword)}`;
+                links[2].href = `https://market.yandex.ru/search?text=${encodeURIComponent(searchKeyword)}`;
+                links[3].href = `https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(searchKeyword)}`;
+              }
+            }
+          }).catch(err => {
+            console.error('Keyword optimization failed:', err);
+          });
         }
       } catch (err) {
         console.error('Error generating purchase links:', err);
